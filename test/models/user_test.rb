@@ -41,7 +41,7 @@ class UserTest < ActiveSupport::TestCase
 
   test "email validation should reject invalid addresses" do
     invalid_addresses = %w[user@example,com user_at_foo.org user.name@example.
-                           foo@bar_baz.com foo@bar+baz.com]
+                           foo@bar_baz.com foo@bar+baz.com tratata@tara..com]
     invalid_addresses.each do |invalid_address|
       @user.email = invalid_address
       assert_not @user.valid?, "#{invalid_address.inspect} should be invalid"
@@ -59,9 +59,16 @@ class UserTest < ActiveSupport::TestCase
     @user.password = @user.password_confirmation = '     '
     assert_not @user.valid?
   end
+
   test 'password length should be at least 6 chars' do
     @user.password = @user.password_confirmation = 'a' * 5
     assert_not @user.valid?
   end
 
+  test 'password should be downcased bofore save to database' do
+    mixed_email = 'UseR@ExamPle.com'
+    @user.email = mixed_email
+    @user.save
+    assert_equal mixed_email.downcase, @user.reload.email
+  end
 end
